@@ -1,41 +1,97 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<div class="container py-5">
-    <header class="text-center mb-5 p-5 bg-white border rounded shadow-sm">
-        <h1 class="display-4 fw-bold text-primary">CleanSpace</h1>
-        <p class="lead text-secondary">Giải pháp dọn dẹp chuyên nghiệp - Mang không gian sống trong lành đến nhà bạn.</p>
-        <a href="{% url 'services:service_list' %}" class="btn btn-primary btn-lg mt-3">Khám phá dịch vụ</a>
-    </header>
+<style>
+    /* 1. IMPORT PHÔNG CHỮ TIẾNG VIỆT ĐẸP */
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
+    
+    :root {
+        --brand-green: #166e2b;
+        --brand-yellow: #ffc107;
+        --brand-bg-soft: #d8be9b;
+    }
 
-    <section>
-        <h2 class="mb-4">Dịch vụ mới cập nhật</h2>
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-            {% for service in services %}
-            <div class="col">
-                <div class="card h-100 shadow-sm border-0">
-                    {% if service.image %}
-                        <img src="{{ service.image.url }}" class="card-img-top" alt="{{ service.name }}" style="height: 200px; object-fit: cover;">
-                    {% endif %}
-                    <div class="card-body">
-                        <h5 class="card-title fw-bold">{{ service.name }}</h5>
-                        <p class="card-text text-muted">{{ service.description|truncatewords:15 }}</p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-success fw-bold">{{ service.price }} VNĐ</span>
-                            <span class="badge bg-light text-dark">{{ service.duration_hours }} giờ</span>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-white border-0">
-                        <a href="{% url 'services:service_detail' service.id %}" class="btn btn-outline-primary w-100">Chi tiết</a>
-                    </div>
+    .font-heading { font-family: 'Playfair Display', serif; }
+    .font-body { font-family: 'Montserrat', sans-serif; }
+
+    /* 2. TỐI ƯU HÌNH ẢNH SẮC NÉT */
+    .hero-img-container { width: 100%; max-width: 900px; margin: 0 auto; }
+    .hero-img { 
+        width: 100%; height: auto; border-radius: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        image-rendering: -webkit-optimize-contrast; 
+        image-rendering: crisp-edges;
+    }
+
+    /* 3. ĐỊNH DẠNG KHUNG SLOGAN */
+    .slogan-card { 
+        background: var(--brand-bg-soft); padding: 30px; border-radius: 20px; 
+        border: 1px solid #e8d5d5; transition: 0.3s;
+    }
+    .slogan-card:hover { transform: translateY(-10px); border-color: var(--brand-green); }
+    
+    /* 4. ĐỊNH DẠNG THỐNG KÊ */
+    .stat-number { color: var(--brand-green); font-size: 2.5rem; font-weight: 800; }
+</style>
+
+<div class="container-fluid py-5 font-body">
+    
+    <!-- PHẦN 1: HÌNH ẢNH CHÍNH (TO & GIỮA) -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-11 col-lg-10 hero-img-container">
+            <img src="{% static 'images/cleaning-hero.jpg' %}" alt="CleanSpace" class="hero-img">
+        </div>
+    </div>
+
+    <!-- PHẦN 2: TIÊU ĐỀ & GIỚI THIỆU (CHỮ CLEAN MÀU XANH) -->
+    <div class="row justify-content-center text-center mb-5">
+        <div class="col-lg-8">
+            <h1 class="display-2 fw-bold font-heading">
+                <span style="color: #185e28;">Clean</span><span style="color: var(--brand-yellow);">Space</span>
+            </h1>
+            <p class="h3 text-secondary fst-italic font-heading">Hơn cả sự sạch sẽ, đó là sự An Yên.</p>
+            <p class="fs-5 text-muted mt-4 mb-4">"Chăm sóc ngôi nhà cũng chính là chăm sóc tâm hồn bạn. Tại CleanSpace, chúng tôi không chỉ dọn dẹp, chúng tôi nâng niu tổ ấm bằng sự tỉ mỉ, trả lại bạn không gian trong lành nhất."</p>
+            <a href="{% url 'services:service_list' %}" class="btn btn-lg px-5 rounded-pill" style="background: var(--brand-green); color: white;">Đặt lịch trải nghiệm ngay</a>
+        </div>
+    </div>
+
+    <!-- PHẦN 3: 3 CÂU SLOGAN (KHUNG NỔI BẬT) -->
+    <div class="container mb-5">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="slogan-card text-center">
+                    <div class="display-3">🏠</div>
+                    <h4 class="fw-bold mt-3 font-heading">Nâng niu từng món đồ</h4>
+                    <p class="text-muted">Chúng tôi vệ sinh mọi thứ bằng sự trân trọng như chính nhà mình.</p>
                 </div>
             </div>
-            {% empty %}
-            <div class="col-12 text-center py-5">
-                <p class="text-muted">Hiện tại chưa có dịch vụ nào mới.</p>
+            <div class="col-md-4">
+                <div class="slogan-card text-center">
+                    <div class="display-3">✨</div>
+                    <h4 class="fw-bold mt-3 font-heading">Hương thơm tinh khôi</h4>
+                    <p class="text-muted">Ngôi nhà sạch thơm, xua tan mọi mệt mỏi sau ngày dài làm việc.</p>
+                </div>
             </div>
-            {% endfor %}
+            <div class="col-md-4">
+                <div class="slogan-card text-center">
+                    <div class="display-3">🧸</div>
+                    <h4 class="fw-bold mt-3 font-heading">Thời gian cho yêu thương</h4>
+                    <p class="text-muted">Việc dọn dẹp hãy để CleanSpace, bạn chỉ việc tận hưởng bên gia đình.</p>
+                </div>
+            </div>
         </div>
-    </section>
+    </div>
+
+    <!-- PHẦN 4: THỐNG KÊ TIN CẬY (ĐẨY XUỐNG DƯỚI) -->
+    <div class="container py-5 border-top">
+        <div class="row text-center">
+            <div class="col-md-3 col-6"><div class="stat-number">15K+</div><p class="fw-bold text-muted">Khách hàng hài lòng</p></div>
+            <div class="col-md-3 col-6"><div class="stat-number">500+</div><p class="fw-bold text-muted">Nhân viên tận tâm</p></div>
+            <div class="col-md-3 col-6"><div class="stat-number">4.9★</div><p class="fw-bold text-muted">Đánh giá 5 sao</p></div>
+            <div class="col-md-3 col-6"><div class="stat-number">6</div><p class="fw-bold text-muted">Năm kinh nghiệm</p></div>
+        <div class="container py-5 border-top">
+        <div class="row text-center">
+        </div>
+    </div>
 </div>
 {% endblock %}
