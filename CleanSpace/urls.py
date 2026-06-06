@@ -22,9 +22,9 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/',      admin.site.urls),
     path('account/',    include('apps.account.urls')),
-    path('',            include('apps.services.urls')),
-    path('',            include('apps.bookings.urls')),
-    path('',            include('apps.reviews.urls')),
-    path('management/', include('apps.management.urls')),
+    path('', include(('apps.services.urls', 'services'), namespace='services')),
+    path('bookings/', include(('apps.bookings.urls', 'bookings'), namespace='bookings')),
+    path('reviews/', include(('apps.reviews.urls', 'reviews'), namespace='reviews')),
+    path('management/',     include(('apps.management.urls', 'management'), namespace='management')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
