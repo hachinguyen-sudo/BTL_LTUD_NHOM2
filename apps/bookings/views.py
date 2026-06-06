@@ -2,13 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from .models import Booking, Payment, Promotion
+from .forms import BookingForm                 
 from apps.services.models import Service
-
-# Danh sách quận nội thành phục vụ
-QUAN_NOI_THANH = [
-    'Hoàn Kiếm', 'Đống Đa', 'Hai Bà Trưng', 'Ba Đình',
-    'Tây Hồ', 'Cầu Giấy', 'Thanh Xuân', 'Hoàng Mai', 'Long Biên',
-]
 
 
 @login_required(login_url='login')
@@ -17,18 +12,18 @@ def booking_create_view(request, service_id):
     error   = None
 
     if request.method == 'POST':
-        district     = request.POST.get('district')
-        booking_date = request.POST.get('booking_date')
-        time_slot    = request.POST.get('time_slot')
-        address      = request.POST.get('address')
-        note         = request.POST.get('note', '')
-        promo_code   = request.POST.get('promotion_code', '').strip()
+        form = BookingForm(request.POST)       
 
-        # Bước 1: Kiểm tra vùng phục vụ
-        if district not in QUAN_NOI_THANH:
-            error = 'Khu vực chưa được hỗ trợ. Chúng tôi phục vụ nội thành Hà Nội.'
+        if form.is_valid():                    
+            # Lấy dữ liệu đã được kiểm tra từ form
+            district       = form.cleaned_data['district']
+            booking_date   = form.cleaned_data['booking_date']
+            time_slot      = form.cleaned_data['time_slot']
+            address        = form.cleaned_data['address']
+            note           = form.cleaned_data['note']
+            promo_code     = form.cleaned_data['promotion_code'].strip()
+            payment_method = form.cleaned_data['method']
 
-        else:
             # Bước 2: Kiểm tra overbooking
             so_lich = Booking.objects.filter(
                 booking_date=booking_date,
@@ -71,41 +66,34 @@ def booking_create_view(request, service_id):
                         time_slot=time_slot,
                         note=note,
                         total_amount=total,
-                        status='pending'
+                        status='confirmed'
                     )
-                    return redirect('payment_checkout', booking_id=booking.id)
+
+                    # Bước 6: Tạo Payment
+                    Payment.objects.create(
+                        booking=booking,
+                        amount=booking.total_amount,
+                        method=payment_method,
+                        status='success',
+                    )
+
+                    return redirect('payment_success', booking_id=booking.id)
+    else:
+        form = BookingForm()                   
 
     return render(request, 'bookings/booking-form.html', {
-        'service':   service,
-        'quan_list': QUAN_NOI_THANH,
-        'error':     error,
+        'service': service,
+        'form':    form,                        
+        'error':   error,
     })
 
-
-@login_required(login_url='login')
-def payment_checkout_view(request, booking_id):
-    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
-
-    if request.method == 'POST':
-        method = request.POST.get('method')
-        Payment.objects.create(
-            booking=booking,
-            amount=booking.total_amount,
-            method=method,
-            status='success',
-        )
-        booking.status = 'confirmed'
-        booking.save()
-        return redirect('payment_success', booking_id=booking.id)
-
-    return render(request, 'bookings/payment.html', {'booking': booking})
 
 
 @login_required(login_url='login')
 def payment_success_view(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id, user=request.user)
     payment = Payment.objects.get(booking=booking)
-    return render(request, 'bookings/payment-success.html', {
+    return render(request, 'bookings/booking-success.html', {
         'booking': booking,
         'payment': payment,
     })

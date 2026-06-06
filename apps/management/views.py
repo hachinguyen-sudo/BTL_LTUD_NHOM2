@@ -20,7 +20,7 @@ def staff_required(view_func):
 @staff_required
 def dashboard_view(request):
     today = timezone.now().date()
-    # Thống kê tổng quan
+    
     stats = {
         'tong_booking':    Booking.objects.count(),
         'cho_xac_nhan':    Booking.objects.filter(status='pending').count(),
@@ -32,7 +32,7 @@ def dashboard_view(request):
         'chua_doc':        Contact.objects.filter(is_read=False).count(),
     }
     booking_moi = Booking.objects.order_by('-created_at')[:10]
-    return render(request, 'management/dashboard.html', {
+    return render(request, 'management/dashboard.html', { 
         'stats':       stats,
         'booking_moi': booking_moi,
     })
@@ -46,7 +46,7 @@ def manage_orders_view(request):
     ).order_by('-created_at')
     if status_filter:
         bookings = bookings.filter(status=status_filter)
-    return render(request, 'management/orders.html', {
+    return render(request, 'management/bookings.html', {
         'bookings':      bookings,
         'status_filter': status_filter,
     })
@@ -97,3 +97,6 @@ def toggle_review_view(request, review_id):
     review.is_visible = not review.is_visible
     review.save()
     return redirect('manage_reviews')
+
+
+#thiếu promotion.html
