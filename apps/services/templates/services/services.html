@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="mb-5 border-bottom pb-4">
+        <h1 class="fw-bold">Danh sách dịch vụ</h1>
+        <p class="text-muted">Chọn dịch vụ phù hợp với nhu cầu của bạn dưới đây.</p>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for service in services %}
+        <div class="col">
+            <div class="card h-100 shadow-sm border-0 transition-hover">
+                {% if service.image %}
+                    <img src="{{ service.image.url }}" class="card-img-top" alt="{{ service.name }}" style="height: 220px; object-fit: cover;">
+                {% else %}
+                    <div class="bg-light d-flex align-items-center justify-content-center" style="height: 220px;">
+                        <span class="text-muted">Không có ảnh</span>
+                    </div>
+                {% endif %}
+                
+                <div class="card-body">
+                    <h5 class="card-title fw-bold">{{ service.name }}</h5>
+                    <p class="card-text text-muted">{{ service.description|truncatewords:20 }}</p>
+                </div>
+                
+                <div class="card-footer bg-white border-0 pb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="h5 mb-0 text-primary">{{ service.price }} VNĐ</span>
+                        <span class="badge bg-secondary">{{ service.duration_hours }}h</span>
+                    </div>
+                    <a href="{% url 'services:service_detail' service.id %}" class="btn btn-primary w-100">Xem chi tiết</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <h4 class="text-muted">Hiện tại chưa có dịch vụ nào khả dụng.</h4>
+            <a href="{% url 'services:home' %}" class="btn btn-link">Quay lại trang chủ</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .transition-hover:hover {
+        transform: translateY(-5px);
+        transition: transform 0.3s ease;
+    }
+</style>
+{% endblock %}

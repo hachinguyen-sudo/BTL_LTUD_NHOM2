@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'services:home' %}">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'services:service_list' %}">Dịch vụ</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ service.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            {% if service.image %}
+                <img src="{{ service.image.url }}" class="img-fluid rounded shadow" alt="{{ service.name }}">
+            {% else %}
+                <div class="bg-light rounded p-5 text-center shadow">Chưa có hình ảnh</div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-6">
+            <h1 class="fw-bold mb-3">{{ service.name }}</h1>
+            <h3 class="text-success mb-4">{{ service.price }} VNĐ</h3>
+            
+            <div class="mb-4">
+                <h5>Mô tả chi tiết:</h5>
+                <p class="text-secondary">{{ service.description|linebreaks }}</p>
+            </div>
+
+            <ul class="list-group list-group-flush mb-4">
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>Thời gian hoàn thành:</span>
+                    <span class="fw-bold">{{ service.duration_hours }} giờ</span>
+                </li>
+            </ul>
+
+            <div class="d-grid gap-2">
+                <a href="#" class="btn btn-primary btn-lg">Đặt lịch ngay</a>
+                <a href="{% url 'services:service_list' %}" class="btn btn-outline-secondary">Quay lại danh sách</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
